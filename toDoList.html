@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>To Do List</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+      <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body {
+            background-color: #1c0045;
+            font-family: "Tajawal", sans-serif;
+            font-size: 16px;
+          }
+          .section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 150px;
+            direction: rtl;
+          }
+          .container {
+            width: 50%;
+            background-color: #f1eff2;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+          }
+          .title {
+            background-color: #532d92;
+
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .title h2 {
+            font-size: 18px;
+            font-weight: 700;
+            position: relative;
+            right: 250px;
+          }
+          .title i {
+            font-size: 20px;
+          }
+          .cards {
+            margin: 20px 10px;
+          }
+          .card {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow:  1px 1px 5px rgba(0, 0, 0, 0.15);
+            transition: box-shadow 0.2s;
+          }
+          .done{
+            background-color: #94FD96;
+          }
+          .card:hover{
+            box-shadow: 0px 3px 5px rgba(97, 97, 97, 0.8);
+          }
+          .calendar {
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            color: #4d4d4d;
+            font-size: 12px;
+          }
+          .calendar  i {
+            margin-left: 5px;
+          }
+          .icons i {
+            margin-left: 10px;
+            cursor: pointer;
+          }
+      </style>
+  </head>
+  <body>
+    <div class="section">
+      <div class="container">
+
+          <!---HEADER--->
+          <div class="title">
+              <h2>مهامي</h2>
+              <i id ="add-btn" class="fas fa-plus-circle"></i>
+          </div>
+          <!--- // HEADER // --->
+
+          <!-- TASKS -->
+          <div id="cards">
+
+            <!-- TASK CARD -->
+            <div class="card">
+
+                <!---TASK INFO -->
+                <div class="text">
+                    <h3>ادرس الرياضيات</h3>
+                    <div class="calendar">
+                        <i class="far fa-calendar"></i>
+                        <span>10-04-23</span>
+                    </div>
+                </div>
+                <!--- // TASK INFO // -->
+
+                <!-- TASK ACTION-->
+                <div class="icons">
+                    <i class="fas fa-minus-circle" style="color: #d71919"></i>
+                    <i id ="done-btn" class="fas fa-check-circle" style="color: #4ca95b"></i>
+                    <i id ="edit-btn" class="fas fa-pen" style="color: #2e7bff"></i>
+                </div>
+                <!--- // TASK ACTION// -->
+
+            </div>
+            <!-- // TASK CARD // -->
+
+          </div>
+          <!-- // TASKS // -->
+      </div>
+    </div>
+
+    <script>
+
+      // READ TASKS   => DISPLAY TASKS
+      let tasks = [
+          {
+              "title" : "انهاء المشروع النهائي",
+              "date" : "26-12-2024",
+              "isDone" :false,
+          },
+          {
+              "title" : "انهاء كورس جافاسكربت ",
+              "date" : "26-12-2024",
+              "isDone" :false,
+          },
+      ]
+
+      
+      function getTasksFromStorage(){ 
+        let retrievedTasks = JSON.parse(localStorage.getItem("myTasks"))
+        tasks = retrievedTasks ?? []
+      }
+
+      getTasksFromStorage()
+
+
+      function printAllTasks(){
+          document.getElementById("cards").innerHTML= "";
+          let index = 0
+          for(task of tasks){
+            let content = `          
+                <!-- TASK CARD -->
+                  <div class="card ${task.isDone ? 'done' : ''}">
+
+                      <!---TASK INFO -->
+                      <div class="text">
+                          <h3>${task.title}</h3>
+                          <div class="calendar">
+                              <i class="far fa-calendar"></i>
+                              <span>${task.date}</span>
+                          </div>
+                      </div>
+                      <!--- // TASK INFO // -->
+
+                      <!-- TASK ACTION-->
+                      <div class="icons">
+                          <i onclick ="deleteTask(${index})" class="fas fa-minus-circle" style="color: #d71919"></i>
+                          ${task.isDone ? 
+                                `<i  onclick ="toggleTaskCompletion(${index})" class="fa-solid fa-circle-xmark" style="color: #130030" ></i>` 
+                                : 
+                                `<i  onclick ="toggleTaskCompletion(${index})" class="fas fa-check-circle" style="color: #4ca95b"></i>`}
+                          
+                          <i onclick ="updateTask(${index})" class="fas fa-pen" style="color: #2e7bff"></i>
+                      </div>
+                      <!--- // TASK ACTION// -->
+
+                  </div>
+                  <!-- // TASK CARD // -->`
+              document.getElementById("cards").innerHTML += content
+              index++ 
+      }
+      }
+      
+      //CREATE TASK
+      document.getElementById("add-btn").addEventListener("click",function(){
+          let taskName = prompt("الرجاء ادخال  المهمة")
+          let now = new Date()
+          let date =  `${now.getFullYear()} / ${now.getMonth()+1} / ${now.getDate()}`;
+          let taskObj ={
+            "title" : taskName,
+            "date" : date,
+            "isDone" :false,
+          }
+          tasks.push(taskObj)
+          storeTasks()
+          printAllTasks()
+      })
+
+      // DELETE TASK 
+      printAllTasks()
+      function deleteTask(index){
+          let isConfirmed = confirm( task.title + " هل انت متأكد من حذف مهمة")
+          if (isConfirmed){
+            tasks.splice(index,1)
+            storeTasks()
+            printAllTasks()
+          }
+      }
+
+      // UPDATE TASK
+      function updateTask(index){
+          let isConfirmed = confirm( task.title + " هل انت متأكد من تعديل  مهمة")
+          if (isConfirmed){
+            let updateTitle =  prompt("ادخل عنوان المهمة",tasks[index].title);
+            tasks[index].title=updateTitle
+            storeTasks()
+            printAllTasks()
+          }
+      }
+
+      // TASK DONE
+
+      function toggleTaskCompletion(index){
+          let task = tasks[index]
+          task.isDone = !task.isDone
+          storeTasks()
+          printAllTasks()     
+      }
+
+      // ================= LOCAL STORAGE FUNCTION ======================
+      function storeTasks(){
+          let tasksString = JSON.stringify(tasks)
+          localStorage.setItem("myTasks",tasksString);
+      }
+      
+    </script>
+  </body>
+</html>
